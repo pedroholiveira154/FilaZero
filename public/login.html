@@ -4,118 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Estoque</title>
-    <style>
-        
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f3f4f6;
-    color: #1f2937;
-}
-
-.container {
-    width: min(94%, 1000px);
-    margin: 40px auto;
-}
-
-.card {
-    background: #fff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 4px 18px rgb(0 0 0 / 8%);
-}
-
-h1 {
-    margin-top: 0;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 1rem;
-}
-
-button {
-    padding: 10px 14px;
-    border: 0;
-    border-radius: 6px;
-    background: #2563eb;
-    color: #fff;
-    cursor: pointer;
-    margin: 2px;
-}
-
-button:hover {
-    background: #1d4ed8;
-}
-
-button:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-.cabecalho {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.tabela-container {
-    width: 100%;
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-th,
-td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-#mensagem {
-    overflow-wrap: anywhere;
-}
-
-@media (max-width: 600px) {
-    .container {
-        margin: 20px auto;
-    }
-
-    .card {
-        padding: 16px;
-    }
-
-    th,
-    td {
-        padding: 8px;
-    }
-}
-    </style>
+    <title>Login - Estoque</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="_css/admin.css">
     <script src="_js/login.js" defer></script>
 </head>
-<body>
-    <main class="container">
+<body  id="pagina-login" class="pagina-admin">
+    <main class="painel-login">
         <section class="card">
             <h1>Entrar no sistema</h1>
             <p>Informe suas credenciais para acessar o estoque.</p>

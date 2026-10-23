@@ -8,6 +8,7 @@
 *::before,
 *::after {
     box-sizing: border-box;
+    font-family: "Montserrat", system-ui, sans-serif;
 }
 
 .pagina-admin {
@@ -99,7 +100,7 @@
     color: rgba(160, 159, 159, 0.349);
 }
 
-#botao-login {
+#btn-login {
     width: min(11.25rem, 100%);
     min-height: 2.75rem;
     margin-bottom: 1.5rem;
@@ -112,7 +113,7 @@
     cursor: pointer;
 }
 
-#botao-login:hover {
+#btn-login:hover {
     background-color: rgba(118, 10, 10, 0.727);
 }
 

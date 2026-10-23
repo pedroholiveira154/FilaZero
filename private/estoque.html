@@ -4,121 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estoque</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f3f4f6;
-            color: #1f2937;
-        }
-
-        .container {
-            width: min(94%, 1000px);
-            margin: 40px auto;
-        }
-
-        .card {
-            background: #fff;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 18px rgb(0 0 0 / 8%);
-        }
-
-        h1 {
-            margin-top: 0;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-
-        button {
-            padding: 10px 14px;
-            border: 0;
-            border-radius: 6px;
-            background: #2563eb;
-            color: #fff;
-            cursor: pointer;
-            margin: 2px;
-        }
-
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: wait;
-        }
-
-        .cabecalho {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .tabela-container {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        #mensagem {
-            overflow-wrap: anywhere;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                margin: 20px auto;
-            }
-
-            .card {
-                padding: 16px;
-            }
-
-            th,
-            td {
-                padding: 8px;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="/_css/admin.css">
+    <title>Estoque - FilaZero</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="_css/admin.css">
     <script src="/_js/estoque.js" defer></script>
 </head>
 
-<body>
-    <main class="container">
+<body id="pagina-estoque" class="pagina-admin">
+    <main class="area-estoque">
         <section class="card">
-            <header class="cabecalho">
+            <header class="painel-estoque">
                 <div>
                     <h1>Estoque</h1>
                     <p id="usuario-logado">Verificando sessão...</p>
@@ -131,8 +29,8 @@
 
             <p id="mensagem" role="status" aria-live="polite"></p>
 
-            <div class="tabela-container">
-                <table>
+            <section class="painel-estoque" aria-labelledby="titulo-estoque">
+                <table class="tabela-estoque">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -143,8 +41,15 @@
                     </thead>
                     <tbody id="lista-produtos"></tbody>
                 </table>
-            </div>
+            </section>
         </section>
+
+        <nav class="acoes-estoque" aria-label="Ações de estoque">
+            <button type="button" class="botao-admin">SOLICITAR RE-ESTOQUE</button>
+            <button type="button" class="botao-admin">ALTERAR PRODUTO</button>
+            <button type="button" class="botao-admin">CADASTRAR PRODUTO</button>
+            <button type="button" class="botao-admin">REMOVER PRODUTO</button>
+        </nav>
     </main>
 </body>
 

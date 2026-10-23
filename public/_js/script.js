@@ -361,12 +361,25 @@ async function pagar() {
         }))
     };
 
+    // Obtém um token de segurança para a requisição.
+    const respostaToken = await fetch('/api/csrf');
+
+    if (!respostaToken.ok) {
+        throw new Error('Não foi possível obter o token de segurança.');
+    }
+
+    const { csrfToken } = await respostaToken.json();
+
     try {
-        const resposta = await fetch("http://localhost:3001/api/pedidos", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(pedido)
-        });
+    // Envia o pedido incluindo o token CSRF.
+    const resposta = await fetch('/api/pedidos', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+        },
+        body: JSON.stringify(pedido)
+    });
 
         if (!resposta.ok) throw new Error("Falha ao registrar pedido");
 
@@ -379,6 +392,7 @@ async function pagar() {
         alert("Não foi possível registrar o pedido. Veja o console.");
     }
 }
+
 
 
 // =============================================
