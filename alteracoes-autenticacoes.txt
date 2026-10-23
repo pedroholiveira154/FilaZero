@@ -1,0 +1,35 @@
+IMPLEMENTAÇÃO INICIAL DO FILAZERO
+
+Conteúdo do pacote:
+- server-mysql/server.js: servidor principal; mantém as rotas de pedidos e movimentações, e monta os módulos de autenticação e produtos.
+- server-mysql/routes/autenticacao.js: token CSRF, login, consulta da sessão (/api/me) e logout (/api/logout).
+- server-mysql/routes/produtos.js: consulta pública, listagem administrativa, cadastro, edição, categorias e desativação de produtos.
+- server-mysql/middleware/verificar-autenticação.js: valida se a sessão corresponde a uma conta ativa.
+- server-mysql/middleware/permissão-admin.js: verifica se o perfil pode executar a operação.
+- server-mysql/middleware/verificar-csrf.js: valida tokens CSRF.
+- public/_js/estoque.js: valida a sessão, carrega os produtos, registra entradas/saídas e encerra a sessão.
+- server-mysql/db.js: versão com carregamento explícito do .env e validação das variáveis essenciais.
+
+VERIFICAÇÃO DE SINTAXE (rode a partir da raiz do projeto):
+node --check server-mysql/server.js
+node --check server-mysql/routes/autenticacao.js
+node --check server-mysql/routes/produtos.js
+node --check server-mysql/middleware/verificar-autenticação.js
+node --check server-mysql/middleware/permissão-admin.js
+node --check server-mysql/middleware/verificar-csrf.js
+node --check public/_js/estoque.js
+
+TESTES MANUAIS:
+- Entrar com uma conta administrativa válida e confirmar que abre /estoque.html.
+- Atualizar a página e confirmar que a sessão continua válida.
+- Registrar uma entrada e uma saída de estoque; a saída não deve exceder o saldo disponível.
+- Clicar em Sair e confirmar redirecionamento para /login.html.
+- Tentar abrir /estoque.html e consultar /api/estoque depois do logout; o acesso deve ser recusado.
+- Testar GET /api/produtos e confirmar que produtos desativados não aparecem no cardápio.
+- Testar DELETE /api/produtos/:id com token CSRF e perfil admin; a resposta confirma desativação, sem apagar o histórico.
+- Testar GET /api/produtos/admin com perfil admin para consultar inclusive os desativados.
+
+COMPORTAMENTO RELEVANTE:
+- DELETE /api/produtos/:id foi mantido por compatibilidade, mas agora define disponivel = FALSE, preservando o registro e o histórico.
+- GET /api/produtos lista produtos disponíveis; GET /api/produtos/admin (somente admin) lista todos.
+- Não foi feita integração real com seu MySQL neste ambiente; os arquivos passaram por verificação de sintaxe e dos caminhos dos módulos. Execute os testes manuais no seu projeto.

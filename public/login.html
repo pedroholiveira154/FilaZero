@@ -1,40 +1,48 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - FilaZero</title>
+    <title>Login - Estoque</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="_css/admin.css">
+    <script src="_js/login.js" defer></script>
 </head>
-
-<body id="pagina-login" class="pagina-admin">
-
+<body  id="pagina-login" class="pagina-admin">
     <main class="painel-login">
-        <h1 id="titulo-login">LOGIN</h1>
+        <section class="card">
+            <h1>Entrar no sistema</h1>
+            <p>Informe suas credenciais para acessar o estoque.</p>
 
-        <input id="usuario" type="text" placeholder="Usuário" aria-label="Usuário" autocomplete="username">
+            <form id="pg-login">
+                <label for="usuario">Usuário</label>
+                <input
+                    type="text"
+                    id="usuario"
+                    name="usuario"
+                    autocomplete="username"
+                    maxlength="100"
+                    required
+                >
 
-        <input id="senha" type="password" placeholder="Senha" aria-label="Senha" autocomplete="current-password">
+                <label for="senha">Senha</label>
+                <input
+                    type="password"
+                    id="senha"
+                    name="senha"
+                    autocomplete="current-password"
+                    required
+                >
 
-        <button id="botao-login" type="button" onclick="acessar()">LOGIN</button>
-
-        <p class="texto-direitos">@Todos direitos reservados.</p>
+                <button type="submit" id="btn-login">Entrar</button>
+                <p id="mensagem" role="status" aria-live="polite"></p>
+            </form>
+        </section>
     </main>
-
-    <script>
-        function acessar() {
-            var usuario = document.getElementById('usuario').value;
-            var senha = document.getElementById('senha').value;
-
-            if(usuario === "Admin" && senha === "123") {
-                window.location.href = "estoque.html"
-            }else {
-                alert("Usuário ou Senha Incorretos")
-            }
-        }
-    </script>
-
 </body>
 
 </html>

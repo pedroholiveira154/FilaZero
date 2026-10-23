@@ -1,72 +1,42 @@
 ### URL página: 
-- [https://pedroholiveira154.github.io/totem-cantina/](https://pedroholiveira154.github.io/totem-cantina/)
-
-- senha : 117117
+- [https://pedroholiveira154.github.io/totem-cantina/](https://pedroholiveira154.github.io/FilaZero/)
 
 ### Iniciar o servidor:
-- Leia o database.md!
+- Leia o database.md na pasta `database/`
 
-## Passo 1: Copie a URL do repositório
+---
 
 ### No GitHub:
 
 - Abra o repositório.
 - Clique em Code.
-- Copie a URL HTTPS, por exemplo:
-- https://github.com/pedroholiveira154/totem-cantina.git
+- Copie a URL HTTPS, por exemplo: https://github.com/pedroholiveira154/FilaZero.git
 
-## Passo 2: Crie uma pasta
+## Passo 1: Clone o repositório
 
-- Em qualquer área do PC, crie uma pasta e a nomeie como quiser
-- Em seguida, abra a pasta no VSCODE
+- Abra o CMD e insira o seguinte código:
+  git clone https://github.com/pedroholiveira154/FilaZero.gi
 
-## Passo 3: Clone o repositório
+**Isso criará uma pasta chamada FilaZero.**
 
-- Abra o terminal do VSCODE e insira o seguinte código:
-  git clone https://github.com/pedroholiveira154/totem-cantina.git
+## Passo 2: Entre na pasta do projeto
 
-- Isso criará uma pasta chamada totem-cantina.
+- cd FilaZero
 
-## Passo 4: Entre na pasta do projeto
+## Passo 3: Se identifique
 
-- cd totem-cantina
-
-## Passo 5: Verifique se está tudo certo
-
-- git status
-
-Você deverá ver algo parecido com:
-
-- On branch main
-- Your branch is up to date with 'origin/main'.
-
-- nothing to commit, working tree clean
-
-## Passo 6: Faça suas alterações
-
-- Antes de enviar, atualize sua cópia. Isso evita conflitos com alterações feitas por outros colaboradores.
-
-- git pull origin main
-
-Se não houver conflitos, siga para o próximo passo.
-
-## Passo 7: Se identifique
-
-- Identifique-se para o GIT com os comando:
+Identifique-se para o GIT com os comandos:
 - git config user.name 'Seu nome'
 - git config user.email 'email@.....com
 
-## Passo final: Envie suas alterações
+## Passo 4: Enviar as alterações
 
-- git add . (adiciona todas alterações)
+Entre na branch *develop* com:
+- git checkout develop
 
-- git commit -m "Explique a alteração aqui de forma simples"
+Abra a aba do GIT do VSCODE (No momento já deve estar mostrando quantas alterações foram feitas em número), representado por 3 círculos que se conectam por um traço
 
-- git push origin main
+**Adicione somente as alterações que deseja pelo símbolo do +**
 
-# Sempre que for trabalhar (Fluxo):
+Agora na barra de alterações, escreva de forma simplificada o que foi modificada e, por fim, clique no botão *Confirmação*
 
-- git pull origin main
-- git add .
-- git commit -m "Minha alteração"
-- git push origin main

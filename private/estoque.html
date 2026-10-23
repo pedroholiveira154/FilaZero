@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque - FilaZero</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="_css/admin.css">
+    <script src="/_js/estoque.js" defer></script>
+</head>
+
+<body id="pagina-estoque" class="pagina-admin">
+    <main class="area-estoque">
+        <section class="card">
+            <header class="painel-estoque">
+                <div>
+                    <h1>Estoque</h1>
+                    <p id="usuario-logado">Verificando sessão...</p>
+                </div>
+
+                <button type="button" id="btn-sair">
+                    Sair
+                </button>
+            </header>
+
+            <p id="mensagem" role="status" aria-live="polite"></p>
+
+            <section class="painel-estoque" aria-labelledby="titulo-estoque">
+                <table class="tabela-estoque">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Movimentação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-produtos"></tbody>
+                </table>
+            </section>
+        </section>
+
+        <nav class="acoes-estoque" aria-label="Ações de estoque">
+            <button type="button" class="botao-admin">SOLICITAR RE-ESTOQUE</button>
+            <button type="button" class="botao-admin">ALTERAR PRODUTO</button>
+            <button type="button" class="botao-admin">CADASTRAR PRODUTO</button>
+            <button type="button" class="botao-admin">REMOVER PRODUTO</button>
+        </nav>
+    </main>
+</body>
+
+</html>

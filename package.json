@@ -7,10 +7,15 @@
     "start": "node server-mysql/server.js"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^5.2.1",
-    "mysql2": "^3.11.0",
+    "dotenv": "^16.6.1",
+    "express": "^5.3.0",
+    "express-mysql-session": "^3.0.3",
+    "express-rate-limit": "^8.7.1",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
+    "mysql2": "^3.24.5",
     "selenium-webdriver": "^4.49.0"
   }
 }
