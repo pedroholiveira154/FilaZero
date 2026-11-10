@@ -5,14 +5,6 @@
 -- Faça backup antes de executar. Remova/comente o DROP se não quiser apagar.
 -- =====================================================================
 
-DROP DATABASE IF EXISTS totem_cantina;
-
-CREATE DATABASE totem_cantina
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE totem_cantina;
-
 CREATE TABLE categorias (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL

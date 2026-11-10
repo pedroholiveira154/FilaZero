@@ -1,4 +1,3 @@
-
 const path = require('path');
 const dotenv = require('dotenv');
 const mysql = require('mysql2/promise');
@@ -14,7 +13,8 @@ dotenv.config({
 const variaveisObrigatorias = [
     'DB_HOST',
     'DB_USER',
-    'DB_NAME'
+    'DB_NAME',
+    'DB_PASSWORD'
 ];
 
 const variaveisAusentes = variaveisObrigatorias.filter(
@@ -38,7 +38,7 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME,
     charset: 'utf8mb4',
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 5,
     queueLimit: 0
 });
 
