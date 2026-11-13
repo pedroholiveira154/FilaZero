@@ -686,44 +686,144 @@ select {
 }
 
 
-/* ==========================================================================
-   7. PAGAMENTO
-   ========================================================================== */
+/* =========================================
+   PÁGINA DE PAGAMENTO - NOVO LAYOUT
+========================================= */
 
-#resumo-total-pagamento {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+#pagina-pagamento .painel-etapa {
+    display: grid;
+    grid-template-columns: 35% 65%;
+    overflow: hidden;
+    padding: 0;
+    text-align: left;
 }
 
-#resumo-total-pagamento p {
-  color: var(--vermelho);
-  font-size: clamp(1.1rem, min(2.2vw + 0.5rem, 3.6vh), 2rem);
+/* PAINEL DE RESUMO */
+
+#pagina-pagamento .painel-resumo {
+    background-color: #34495e;
+    color: white;
+    padding: 35px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
 }
 
-/* Celular: 2 colunas simples */
-#opcoes-pagamento {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(0.5rem, 1.5vw, 1.02rem);
-  width: min(100%, 52rem);
+#pagina-pagamento .painel-resumo h2 {
+    font-size: 21px;
+    font-weight: 600;
+    text-align: center;
 }
 
-.botao-forma-pagamento {
-  min-height: 4.25rem;
-  font-size: clamp(0.95rem, 1.2vw + 0.5rem, 1.25rem);
-  color: white;
-  background-color: var(--vermelho);
-  border: none;
-  border-radius: 17%;
-  cursor: pointer;
+#pagina-pagamento #preco-total {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
 }
 
-.botao-forma-pagamento:active {
-  background-color: #920000;
+#pagina-pagamento .icone-carrinho {
+    width: 48px;
+    height: 48px;
+    filter: brightness(0) invert(1);
 }
+
+#pagina-pagamento #preco-total h1 {
+    font-size: 30px;
+    color: white;
+    font-weight: 700;
+}
+
+#pagina-pagamento .texto-resumo {
+    color: #e5e7eb;
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* ÁREA DE PAGAMENTO */
+
+#pagina-pagamento .area-pagamento {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+}
+
+#pagina-pagamento .area-pagamento h2 {
+    font-size: 21px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+/* OPÇÕES */
+
+#pagina-pagamento #opcoes-pagamento {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+}
+
+#pagina-pagamento .botao-forma-pagamento {
+    min-height: 105px;
+    border: 1px solid #dedede;
+    border-radius: 12px;
+    background: white;
+    color: #333;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+#pagina-pagamento .botao-forma-pagamento:hover {
+    border-color: #e60000;
+    background-color: #fff7f7;
+}
+
+#pagina-pagamento .botao-forma-pagamento.selecionado {
+    border: 2px solid #e60000;
+    background-color: #fff1f1;
+    color: #e60000;
+}
+
+#pagina-pagamento .icone-pagamento {
+    font-size: 27px;
+    font-weight: 600;
+}
+
+/* DETALHES DA FORMA SELECIONADA */
+
+#pagina-pagamento #detalhes-pagamento {
+    width: 100%;
+    min-height: 65px;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #f7f7f7;
+    color: #555;
+    font-size: 13px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.5;
+}
+
+#pagina-pagamento #detalhes-pagamento p {
+    margin: 0;
+}
+
 
 
 /* ==========================================================================
@@ -750,44 +850,23 @@ select {
    ========================================================================== */
 
 /* Tablet e telas maiores: pagamento no formato "W" (3 em cima, 2 embaixo) */
-@media (min-width: 640px) {
-  #opcoes-pagamento {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    grid-template-rows: repeat(2, auto);
-  }
 
-  .botao-forma-pagamento {
-    width: 100%;
-    max-width: min(9.375rem, 15vh);
-    min-height: 0;
-    aspect-ratio: 1 / 1;
-    justify-self: center;
-  }
+@media (max-width: 700px) {
+    #pagina-pagamento .painel-etapa {
+        grid-template-columns: 1fr;
+    }
 
-  #pagamento-debito {
-    grid-column: 1;
-    grid-row: 1;
-  }
+    #pagina-pagamento .painel-resumo {
+        padding: 20px;
+    }
 
-  #pagamento-credito {
-    grid-column: 2;
-    grid-row: 2;
-  }
+    #pagina-pagamento .area-pagamento {
+        padding: 20px;
+    }
 
-  #pagamento-dinheiro {
-    grid-column: 3;
-    grid-row: 1;
-  }
-
-  #pagamento-pix {
-    grid-column: 4;
-    grid-row: 2;
-  }
-
-  #pagamento-vale-refeicao {
-    grid-column: 5;
-    grid-row: 1;
-  }
+    #pagina-pagamento #opcoes-pagamento {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 /* Celular: categorias viram uma faixa horizontal acima dos produtos */

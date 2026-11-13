@@ -71,7 +71,7 @@ function retornar() {
     if (pg_pagamento) {
         window.location.href = 'pedido.html'
     }
-    if(pg_finalizar){
+    if (pg_finalizar) {
         window.location.href = 'pagamento.html'
     }
 }
@@ -110,14 +110,14 @@ function mostrarTotal(total) {
 // FUNCOES - CARDAPIO
 // =============================================
 
-async function categoria(){
+async function categoria() {
     const li = document.querySelector('li.ativo');
     const categoria = li.dataset.categoria;
 
-    try{
+    try {
         console.log(categoria)
     }
-    catch(error){
+    catch (error) {
         console.log(error)
         alert("Não foi possível alternar a categoria")
     }
@@ -325,22 +325,78 @@ if (pg_pedido) {
 // =============================================
 // FUNCOES - PAGAMENTO
 // =============================================
-
 if (pg_pagamento) {
 
-    // pega carrinho
-    const carrinho = obterCarrinho();
+    const formasPagamento = {
+        "pagamento-pix": {
+            nome: "Pix",
+            mensagem: "Pix selecionado. Siga as instruções de pagamento para concluir seu pedido."
+        },
 
-    // calcula o total
-    const total = calcularTotal(carrinho);
+        "pagamento-debito": {
+            nome: "Débito",
+            mensagem: "Débito selecionado. Utilize a máquina de cartão para realizar o pagamento."
+        },
 
-    // MOSTRAR TOTAL
-    mostrarTotal(total);
-    
+        "pagamento-credito": {
+            nome: "Crédito",
+            mensagem: "Crédito selecionado. Utilize a máquina de cartão para realizar o pagamento."
+        },
+
+        "pagamento-dinheiro": {
+            nome: "Dinheiro",
+            mensagem: "Dinheiro selecionado. Realize o pagamento no caixa da cantina."
+        },
+
+        "pagamento-vale-refeicao": {
+            nome: "Vale-refeição",
+            mensagem: "Vale-refeição selecionado. Utilize seu cartão de benefício para realizar o pagamento."
+        }
+    };
+
+    let formaPagamentoSelecionada = null;
+
+    const botoesPagamento = document.querySelectorAll(
+        ".botao-forma-pagamento"
+    );
+
+    const detalhesPagamento = document.getElementById(
+        "detalhes-pagamento"
+    );
+
+    botoesPagamento.forEach(botao => {
+
+        botao.addEventListener("click", () => {
+
+            const forma = formasPagamento[botao.id];
+
+            if (!forma) return;
+
+            // Remove a seleção anterior
+            botoesPagamento.forEach(item => {
+                item.classList.remove("selecionado");
+                item.setAttribute("aria-pressed", "false");
+            });
+
+            // Seleciona a nova forma
+            botao.classList.add("selecionado");
+            botao.setAttribute("aria-pressed", "true");
+
+            formaPagamentoSelecionada = forma.nome;
+
+            // Atualiza somente a área de detalhes
+            detalhesPagamento.innerHTML = `
+                <p>${forma.mensagem}</p>
+            `;
+
+        });
+
+    });
+
 }
 
 // ADAPTADO: antes esse botão só limpava o carrinho e redirecionava,
-    // sem gravar nada. Agora ele registra o pedido de verdade via API.
+// sem gravar nada. Agora ele registra o pedido de verdade via API.
 async function pagar() {
 
     const carrinho = obterCarrinho();
@@ -371,25 +427,27 @@ async function pagar() {
     const { csrfToken } = await respostaToken.json();
 
     try {
-    // Envia o pedido incluindo o token CSRF.
-    const resposta = await fetch('/api/pedidos', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-        },
-        body: JSON.stringify(pedido)
-    });
+        // Envia o pedido incluindo o token CSRF.
+        const resposta = await fetch('/api/pedidos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(pedido)
+        });
 
         if (!resposta.ok) throw new Error("Falha ao registrar pedido");
-
-        alert("Compra realizada!");
         localStorage.removeItem("carrinho");
         window.location.href = "finalizar.html";
 
     } catch (erro) {
         console.error(erro);
-        alert("Não foi possível registrar o pedido. Veja o console.");
+        Swal.fire({
+            icon: "error",
+            text: "Não foi possível concluir o pedido. Verifique o estoque restante e/ou informe um funcionário",
+            showConfirmButton: true
+        });
     }
 }
 

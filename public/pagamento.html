@@ -30,19 +30,60 @@
         </div>
 
         <section class="painel-etapa" aria-label="Forma de pagamento">
-            <div id="resumo-total-pagamento">
-                <p>Total a pagar:</p>
+
+            <!-- Painel esquerdo: resumo do pedido -->
+            <div id="resumo-total-pagamento" class="painel-resumo">
+                <h2>Resumo do pedido</h2>
+
                 <div id="preco-total"></div>
-                <p>Insira a forma de pagamento:</p>
+
+                <p class="texto-resumo">
+                    Confira o valor total antes de continuar.
+                </p>
             </div>
 
-            <div id="opcoes-pagamento">
-                <button type="button" class="botao-forma-pagamento" id="pagamento-debito">Débito</button>
-                <button type="button" class="botao-forma-pagamento" id="pagamento-credito">Crédito</button>
-                <button type="button" class="botao-forma-pagamento" id="pagamento-dinheiro">Dinheiro</button>
-                <button type="button" class="botao-forma-pagamento" id="pagamento-pix">Pix</button>
-                <button type="button" class="botao-forma-pagamento" id="pagamento-vale-refeicao">Vale Refeição</button>
+            <!-- Painel direito: seleção de pagamento -->
+            <div class="area-pagamento">
+
+                <h2>Como você gostaria de pagar?</h2>
+
+                <div id="opcoes-pagamento">
+
+                    <button type="button" class="botao-forma-pagamento" id="pagamento-pix" aria-pressed="false">
+                        <span class="icone-pagamento">▦</span>
+                        <span>Pix</span>
+                    </button>
+
+                    <button type="button" class="botao-forma-pagamento" id="pagamento-debito" aria-pressed="false">
+                        <span class="icone-pagamento">▣</span>
+                        <span>Débito</span>
+                    </button>
+
+                    <button type="button" class="botao-forma-pagamento" id="pagamento-credito" aria-pressed="false">
+                        <span class="icone-pagamento">▣</span>
+                        <span>Crédito</span>
+                    </button>
+
+                    <button type="button" class="botao-forma-pagamento" id="pagamento-dinheiro" aria-pressed="false">
+                        <span class="icone-pagamento">＄</span>
+                        <span>Dinheiro</span>
+                    </button>
+
+                    <button type="button" class="botao-forma-pagamento" id="pagamento-vale-refeicao"
+                        aria-pressed="false">
+                        <span class="icone-pagamento">▤</span>
+                        <span>Vale-refeição</span>
+                    </button>
+
+                </div>
+
+                <!-- Área que muda conforme o pagamento escolhido -->
+                <div id="detalhes-pagamento" aria-live="polite">
+                    <p>Selecione uma forma de pagamento para continuar.</p>
+                </div>
+
             </div>
+
         </section>
     </main>
 

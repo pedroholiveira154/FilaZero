@@ -11,22 +11,27 @@ async function run() {
     await driver.get('http://localhost:3001/'); //Abre a página
 
     //Escreve no input
-    let input_nome = await driver.findElement(By.xpath('//*[@id="nomePedido"]'))
+    let input_nome = await driver.findElement(By.xpath('//*[@id="campo-nome-cliente"]'))
     await input_nome.click()
     await input_nome.sendKeys("Teste Auto")
-    
+    await driver.sleep(1000)
+
     //Clica no botao de iniciar pedido
-    const botao_inicia = await driver.findElement(By.xpath('//*[@id="iniciaPedido"]'))
+    const botao_inicia = await driver.findElement(By.xpath('//*[@id="botao-iniciar-pedido"]'))
     await botao_inicia.click()
     await driver.sleep(2000)
 
-    let produto = await driver.findElement(By.xpath('//*[@id="cardapio"]/div[1]'))
+    let filtroSalgado = await driver.findElement(By.xpath('//*[@id="pagina-cardapio"]/main/div[2]/nav/ul/li[3]'))
+    await filtroSalgado.click()
+    await driver.sleep(1000)
+
+    let produto = await driver.findElement(By.xpath('//*[@id="grade-produtos"]/article[2]'))
     await produto.click()
     await driver.sleep(2000)
 
-    let btn_ok = await driver.findElement(By.xpath('//*[@id="pagina-cardapio"]/div/div/div[6]/button[1]'))
-    await btn_ok.click()
-    await driver.sleep(1000)
+    let btn_pedido = await driver.findElement(By.xpath('//*[@id="barra-acao-cardapio"]/button'))
+    await btn_pedido.click()
+    await driver.sleep(2000)
 
     await driver.quit()
 }
