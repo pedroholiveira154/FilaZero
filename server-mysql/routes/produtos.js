@@ -1,7 +1,7 @@
 // Rotas públicas e administrativas relacionadas a produtos e categorias.
 const express = require('express');
 const pool = require('../db');
-const { exigirPerfil } = require('../middleware/permissão-admin');
+const { exigirPerfil } = require('../middleware/permissao-admin');
 const { exigirCsrf } = require('../middleware/verificar-csrf');
 
 const router = express.Router();

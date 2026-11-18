@@ -4,7 +4,8 @@
   "description": "API de teste local (Node/Express + MySQL) para o projeto totem-cantina",
   "main": "server-mysql/server.js",
   "scripts": {
-    "start": "node server-mysql/server.js"
+    "start": "node server-mysql/server.js",
+    "test": "node --test server-mysql/testes/*.test.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

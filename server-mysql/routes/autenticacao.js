@@ -3,7 +3,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const pool = require('../db');
-const { exigirLogin } = require('../middleware/verificar-autenticação');
+const { exigirLogin } = require('../middleware/verificar-autenticacao');
 const { criarTokenCsrf, exigirCsrf } = require('../middleware/verificar-csrf');
 
 const router = express.Router();

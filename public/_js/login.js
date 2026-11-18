@@ -11,8 +11,15 @@ if (pg_login) {
 
         if (!usuario || !senha) {
             mensagem.textContent = 'Preencha o usuário e a senha.';
+            mensagem.dataset.tipo = 'erro';
             return;
         }
+
+        const botaoLogin = document.getElementById('btn-login');
+        botaoLogin.disabled = true;
+        botaoLogin.textContent = 'Entrando...';
+        mensagem.textContent = '';
+        mensagem.dataset.tipo = '';
 
         try {
             const respostaToken = await fetch('/api/csrf');
@@ -37,6 +44,7 @@ if (pg_login) {
             if (!resposta.ok) {
                 mensagem.textContent =
                     dados.erro || 'Não foi possível entrar.';
+                mensagem.dataset.tipo = 'erro';
                 return;
             }
 
@@ -44,6 +52,11 @@ if (pg_login) {
         } catch (erro) {
             console.error(erro);
             mensagem.textContent = 'Erro ao conectar ao servidor.';
+            mensagem.dataset.tipo = 'erro';
+        } finally {
+            // Se o login deu certo a página é redirecionada; caso contrário o botão volta ao normal.
+            botaoLogin.disabled = false;
+            botaoLogin.textContent = 'Entrar';
         }
     });
 }

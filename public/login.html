@@ -1,10 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Estoque</title>
+    <title>Login - FilaZero</title>
+    <meta name="description" content="Acesso restrito à área administrativa do FilaZero, o sistema de autoatendimento da cantina.">
+    <!-- Página administrativa: não deve ser indexada por mecanismos de busca. -->
+    <meta name="robots" content="noindex, nofollow">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
@@ -12,35 +15,43 @@
     <link rel="stylesheet" href="_css/admin.css">
     <script src="_js/login.js" defer></script>
 </head>
-<body  id="pagina-login" class="pagina-admin">
+
+<body id="pagina-login" class="pagina-admin">
     <main class="painel-login">
-        <section class="card">
-            <h1>Entrar no sistema</h1>
-            <p>Informe suas credenciais para acessar o estoque.</p>
+        <section class="card" aria-labelledby="titulo-login">
+            <p class="marca-login">FilaZero</p>
+            <h1 id="titulo-login">Entrar no sistema</h1>
+            <p class="texto-apoio">Informe suas credenciais para acessar o estoque.</p>
 
             <form id="pg-login">
-                <label for="usuario">Usuário</label>
-                <input
-                    type="text"
-                    id="usuario"
-                    name="usuario"
-                    autocomplete="username"
-                    maxlength="100"
-                    required
-                >
+                <div class="campo-form">
+                    <label for="usuario">Usuário</label>
+                    <input
+                        type="text"
+                        id="usuario"
+                        name="usuario"
+                        autocomplete="username"
+                        maxlength="100"
+                        required
+                    >
+                </div>
 
-                <label for="senha">Senha</label>
-                <input
-                    type="password"
-                    id="senha"
-                    name="senha"
-                    autocomplete="current-password"
-                    required
-                >
+                <div class="campo-form">
+                    <label for="senha">Senha</label>
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
 
-                <button type="submit" id="btn-login">Entrar</button>
-                <p id="mensagem" role="status" aria-live="polite"></p>
+                <button type="submit" id="btn-login" class="botao botao-primario botao-bloco">Entrar</button>
+                <p id="mensagem" role="alert" aria-live="polite"></p>
             </form>
+
+            <p class="rodape-login">Área restrita a pessoas autorizadas.</p>
         </section>
     </main>
 </body>

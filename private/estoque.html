@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estoque - FilaZero</title>
+    <meta name="description" content="Área administrativa do FilaZero: consulta de estoque, movimentações e gerenciamento de produtos da cantina.">
+    <!-- Página restrita: não deve aparecer em mecanismos de busca. -->
+    <meta name="robots" content="noindex, nofollow">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
@@ -13,44 +16,168 @@
     <script src="/_js/estoque.js" defer></script>
 </head>
 
-<body id="pagina-estoque" class="pagina-admin">
-    <main class="area-estoque">
-        <section class="card">
-            <header class="painel-estoque">
-                <div>
-                    <h1>Estoque</h1>
-                    <p id="usuario-logado">Verificando sessão...</p>
+<body id="pagina-estoque" class="pagina-admin pagina-estoque">
+    <a class="link-pular" href="#conteudo-estoque">Pular para o conteúdo</a>
+
+    <header class="cabecalho-admin">
+        <div class="triangulo-vermelho" aria-hidden="true"></div>
+        <div class="conteudo-cabecalho-admin">
+            <p class="marca-admin">FilaZero</p>
+            <h1>Estoque</h1>
+        </div>
+    </header>
+
+    <main id="conteudo-estoque" class="area-estoque">
+        <!-- Identificação da sessão e saída -->
+        <section class="faixa-sessao" aria-label="Sessão">
+            <p class="usuario-sessao">
+                <span class="rotulo-sessao">Conectado como</span>
+                <strong id="usuario-logado">Verificando sessão...</strong>
+                <span id="perfil-logado" class="selo selo-perfil" hidden></span>
+            </p>
+            <button type="button" id="btn-sair" class="botao botao-contorno">Sair</button>
+        </section>
+
+        <p id="mensagem" role="status" aria-live="polite"></p>
+
+        <section class="card painel-estoque" aria-labelledby="titulo-estoque">
+            <div class="cabecalho-painel">
+                <h2 id="titulo-estoque">Produtos</h2>
+
+                <!-- Ações administrativas: exibidas somente para admin e validadas novamente no servidor. -->
+                <div class="acoes-estoque" id="acoes-admin" hidden>
+                    <button type="button" id="btn-cadastrar-produto" class="botao botao-primario">Cadastrar produto</button>
+                    <button type="button" id="btn-novo-usuario" class="botao botao-contorno">Criar novo usuário</button>
                 </div>
+            </div>
 
-                <button type="button" id="btn-sair">
-                    Sair
-                </button>
-            </header>
-
-            <p id="mensagem" role="status" aria-live="polite"></p>
-
-            <section class="painel-estoque" aria-labelledby="titulo-estoque">
+            <div class="tabela-rolavel">
                 <table class="tabela-estoque">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Produto</th>
-                            <th>Quantidade</th>
-                            <th>Movimentação</th>
+                            <th scope="col">Produto</th>
+                            <th scope="col" class="somente-admin" hidden>Preço</th>
+                            <th scope="col" class="somente-admin" hidden>Categorias</th>
+                            <th scope="col">Quantidade</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Movimentação</th>
+                            <th scope="col" class="somente-admin" hidden>Ações</th>
                         </tr>
                     </thead>
                     <tbody id="lista-produtos"></tbody>
                 </table>
-            </section>
+            </div>
         </section>
-
-        <nav class="acoes-estoque" aria-label="Ações de estoque">
-            <button type="button" class="botao-admin">SOLICITAR RE-ESTOQUE</button>
-            <button type="button" class="botao-admin">ALTERAR PRODUTO</button>
-            <button type="button" class="botao-admin">CADASTRAR PRODUTO</button>
-            <button type="button" class="botao-admin">REMOVER PRODUTO</button>
-        </nav>
     </main>
+
+    <!-- Cadastro e alteração de produto -->
+    <dialog id="dialogo-produto" class="dialogo" aria-labelledby="titulo-dialogo-produto">
+        <form id="form-produto" novalidate>
+            <h2 id="titulo-dialogo-produto">Cadastrar produto</h2>
+
+            <div class="campo-form">
+                <label for="produto-nome">Nome do produto</label>
+                <input type="text" id="produto-nome" name="nome" maxlength="100" required>
+            </div>
+
+            <div class="campo-form">
+                <label for="produto-descricao">Descrição</label>
+                <textarea id="produto-descricao" name="descricao" maxlength="255" rows="2"></textarea>
+            </div>
+
+            <div class="grade-campos">
+                <div class="campo-form">
+                    <label for="produto-preco">Preço (R$)</label>
+                    <input type="number" id="produto-preco" name="preco" min="0" step="0.01" inputmode="decimal" required>
+                </div>
+
+                <div class="campo-form" id="campo-quantidade">
+                    <label for="produto-quantidade">Quantidade inicial</label>
+                    <input type="number" id="produto-quantidade" name="quantidade" min="0" step="1" inputmode="numeric" value="0" required>
+                </div>
+            </div>
+
+            <p class="dica-form" id="dica-quantidade" hidden></p>
+
+            <div class="campo-form">
+                <label for="produto-imagem">Imagem (caminho)</label>
+                <input type="text" id="produto-imagem" name="imagem" maxlength="255" placeholder="img/imgCardapio/produto.png">
+            </div>
+
+            <fieldset class="campo-form conjunto-categorias">
+                <legend>Categorias</legend>
+                <div id="lista-categorias" class="lista-categorias"></div>
+            </fieldset>
+
+            <label class="opcao-marcavel">
+                <input type="checkbox" id="produto-disponivel" name="disponivel" checked>
+                <span>Disponível no cardápio</span>
+            </label>
+
+            <p class="erro-dialogo" id="erro-produto" role="alert"></p>
+
+            <div class="acoes-dialogo">
+                <button type="button" class="botao botao-contorno" data-fechar>Cancelar</button>
+                <button type="submit" class="botao botao-primario" id="btn-salvar-produto">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Confirmação de remoção (desativação lógica) -->
+    <dialog id="dialogo-remocao" class="dialogo dialogo-estreito" aria-labelledby="titulo-dialogo-remocao">
+        <form id="form-remocao" method="dialog">
+            <h2 id="titulo-dialogo-remocao">Remover produto?</h2>
+            <p>
+                <strong id="nome-produto-remocao"></strong> deixará de aparecer no cardápio.
+                O registro é desativado, não apagado: pedidos e movimentações anteriores continuam preservados.
+            </p>
+
+            <p class="erro-dialogo" id="erro-remocao" role="alert"></p>
+
+            <div class="acoes-dialogo">
+                <button type="button" class="botao botao-contorno" data-fechar>Cancelar</button>
+                <button type="submit" class="botao botao-perigo" id="btn-confirmar-remocao">Remover</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Criação de usuário (somente admin) -->
+    <dialog id="dialogo-usuario" class="dialogo dialogo-estreito" aria-labelledby="titulo-dialogo-usuario">
+        <form id="form-usuario" novalidate>
+            <h2 id="titulo-dialogo-usuario">Criar novo usuário</h2>
+
+            <div class="campo-form">
+                <label for="usuario-nome">Nome de usuário</label>
+                <input type="text" id="usuario-nome" name="usuario" maxlength="100" autocomplete="off" required>
+            </div>
+
+            <div class="campo-form">
+                <label for="usuario-perfil">Perfil</label>
+                <select id="usuario-perfil" name="perfil" required>
+                    <option value="funcionario">Funcionário</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+
+            <div class="campo-form">
+                <label for="usuario-senha">Senha</label>
+                <input type="password" id="usuario-senha" name="senha" minlength="12" autocomplete="new-password" required aria-describedby="dica-senha">
+                <p class="dica-form" id="dica-senha">Mínimo de 12 caracteres.</p>
+            </div>
+
+            <div class="campo-form">
+                <label for="usuario-confirmacao">Confirmar senha</label>
+                <input type="password" id="usuario-confirmacao" name="confirmacao" autocomplete="new-password" required>
+            </div>
+
+            <p class="erro-dialogo" id="erro-usuario" role="alert"></p>
+
+            <div class="acoes-dialogo">
+                <button type="button" class="botao botao-contorno" data-fechar>Cancelar</button>
+                <button type="submit" class="botao botao-primario" id="btn-salvar-usuario">Criar usuário</button>
+            </div>
+        </form>
+    </dialog>
 </body>
 
 </html>

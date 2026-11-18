@@ -11,9 +11,13 @@ const MySQLStore = require('express-mysql-session')(session);
 const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const crypto = require('crypto');
 
 const pool = require('./db');
+const { exigirLogin } = require('./middleware/verificar-autenticacao');
+const { exigirPerfil } = require('./middleware/permissao-admin');
+const { criarTokenCsrf, exigirCsrf } = require('./middleware/verificar-csrf');
+const rotasProdutos = require('./routes/produtos');
+const rotasUsuarios = require('./routes/usuarios');
 const app = express();
 
 const PORT = process.env.PORT || 3001;
@@ -51,6 +55,12 @@ if (production) {
 app.disable('x-powered-by');
 // Cabeçalhos de segurança. CSP deve ser configurada depois de revisar os scripts do frontend.
 app.use(helmet({ contentSecurityPolicy: false }));
+
+// Páginas administrativas não devem ser indexadas por mecanismos de busca.
+app.use(['/login.html', '/estoque.html'], (req, res, next) => {
+    res.set('X-Robots-Tag', 'noindex, nofollow');
+    next();
+});
 app.use(express.json({ limit: '20kb' }));
 
 app.use(session({
@@ -72,72 +82,13 @@ app.use(session({
 // AUTENTICACAO E PERMISSOES
 // --------------------------------------------------
 
-// Confere a conta no banco em cada rota privada. Assim, uma conta
-// desativada ou cujo perfil mudou perde os privilégios sem esperar a sessão expirar.
-function verificarUsuarioSessao(req, res, next) {
-    if (!req.session?.usuario) {
-        return res.status(401).json({
-            erro: 'Faça login para continuar.'
-        });
-    }
+// As verificações de sessão, perfil e CSRF ficam em middleware/ e são
+// compartilhadas por server.js e pelos módulos de routes/.
 
-    pool.execute(
-        'SELECT id, perfil, ativo FROM usuarios WHERE id = ? LIMIT 1',
-        [req.session.usuario.id]
-    ).then(([usuarios]) => {
-        const conta = usuarios[0];
-
-        if (!conta || !conta.ativo) {
-            return req.session.destroy(() => {
-                res.clearCookie('sid', {
-                    httpOnly: true,
-                    secure: production,
-                    sameSite: 'lax',
-                    path: '/'
-                });
-                res.status(401).json({
-                    erro: 'Sua sessão expirou ou a conta foi desativada. Faça login novamente.'
-                });
-            });
-        }
-
-        // Atualiza o perfil na sessão para refletir alterações feitas no banco.
-        req.session.usuario.id = conta.id;
-        req.session.usuario.perfil = conta.perfil;
-        next();
-    }).catch(next);
-}
-
-function exigirLogin(req, res, next) {
-    verificarUsuarioSessao(req, res, next);
-}
-
-function exigirPerfil(...perfis) {
-    return (req, res, next) => {
-        verificarUsuarioSessao(req, res, () => {
-            if (!perfis.includes(req.session.usuario.perfil)) {
-                return res.status(403).json({
-                    erro: 'Você não tem permissão para esta operação.'
-                });
-            }
-
-            next();
-        });
-    };
-}
 
 // --------------------------------------------------
 // CSRF: PROTEGE OPERACOES COM COOKIE DE SESSAO
 // --------------------------------------------------
-
-function criarTokenCsrf(req) {
-    if (!req.session.csrfToken) {
-        req.session.csrfToken =
-            crypto.randomBytes(32).toString('hex');
-    }
-
-    return req.session.csrfToken;
-}
 
 app.get('/api/csrf', (req, res, next) => {
     const token = criarTokenCsrf(req);
@@ -150,33 +101,6 @@ app.get('/api/csrf', (req, res, next) => {
     });
 });
 
-function exigirCsrf(req, res, next) {
-    const recebido = req.get('X-CSRF-Token');
-    const esperado = req.session?.csrfToken;
-
-    if (
-        typeof recebido !== 'string' ||
-        typeof esperado !== 'string'
-    ) {
-        return res.status(403).json({
-            erro: 'Token de segurança ausente ou inválido.'
-        });
-    }
-
-    const a = Buffer.from(recebido);
-    const b = Buffer.from(esperado);
-
-    if (
-        a.length !== b.length ||
-        !crypto.timingSafeEqual(a, b)
-    ) {
-        return res.status(403).json({
-            erro: 'Token de segurança inválido.'
-        });
-    }
-
-    next();
-}
 
 const limitarLogin = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -262,6 +186,7 @@ app.post(
 
             req.session.usuario = {
                 id: conta.id,
+                nome: conta.usuario,
                 perfil: conta.perfil
             };
 
@@ -320,383 +245,14 @@ app.post(
 );
 
 // --------------------------------------------------
-// PRODUTOS: CONSULTA PUBLICA
+// PRODUTOS, CATEGORIAS E USUARIOS (MODULOS EM routes/)
 // --------------------------------------------------
 
-app.get('/api/produtos', async (req, res, next) => {
-    try {
-        const [linhas] = await pool.query(`
-            SELECT
-                p.id,
-                p.nome,
-                p.descricao,
-                p.preco,
-                p.quantidade,
-                p.imagem,
-                p.disponivel,
-                pc.categoria_id
-            FROM produtos p
-            LEFT JOIN produto_categorias pc
-                ON pc.produto_id = p.id
-            ORDER BY p.id
-        `);
+// Produtos: consulta pública, listagem administrativa e cadastro/edição/desativação.
+app.use('/api', rotasProdutos);
 
-        const mapa = new Map();
-
-        for (const linha of linhas) {
-            if (!mapa.has(linha.id)) {
-                mapa.set(linha.id, {
-                    id: linha.id,
-                    nome: linha.nome,
-                    descricao: linha.descricao,
-                    preco: linha.preco,
-                    quantidade: linha.quantidade,
-                    imagem: linha.imagem,
-                    disponivel: linha.disponivel,
-                    categorias: []
-                });
-            }
-
-            if (linha.categoria_id !== null) {
-                mapa.get(linha.id).categorias.push(
-                    linha.categoria_id
-                );
-            }
-        }
-
-        res.json([...mapa.values()]);
-    } catch (erro) {
-        next(erro);
-    }
-});
-
-app.get('/api/produtos/:id', async (req, res, next) => {
-    try {
-        const id = Number(req.params.id);
-
-        if (!Number.isSafeInteger(id) || id <= 0) {
-            return res.status(400).json({
-                erro: 'ID de produto inválido.'
-            });
-        }
-
-        const [produtos] = await pool.execute(
-            `SELECT id, nome, descricao, preco, quantidade,
-                    imagem, disponivel
-             FROM produtos
-             WHERE id = ?`,
-            [id]
-        );
-
-        if (!produtos.length) {
-            return res.status(404).json({
-                erro: 'Produto não encontrado.'
-            });
-        }
-
-        const [categorias] = await pool.execute(
-            `SELECT categoria_id
-             FROM produto_categorias
-             WHERE produto_id = ?`,
-            [id]
-        );
-
-        res.json({
-            ...produtos[0],
-            categorias: categorias.map(c => c.categoria_id)
-        });
-    } catch (erro) {
-        next(erro);
-    }
-});
-
-// --------------------------------------------------
-// CADASTRAR PRODUTO: SOMENTE ADMIN
-// --------------------------------------------------
-
-app.post(
-    '/api/produtos',
-    exigirPerfil('admin'),
-    exigirCsrf,
-    async (req, res, next) => {
-        const {
-            nome, descricao, preco, quantidade,
-            categoriaId, categorias, imagem, disponivel
-        } = req.body || {};
-
-        const ids = categorias ?? (
-            categoriaId === undefined ? [] : [categoriaId]
-        );
-
-        if (
-            typeof nome !== 'string' ||
-            !nome.trim() ||
-            nome.length > 100 ||
-            (descricao != null &&
-                (typeof descricao !== 'string' || descricao.length > 255)) ||
-            !Number.isFinite(Number(preco)) ||
-            Number(preco) < 0 ||
-            !Number.isSafeInteger(Number(quantidade)) ||
-            Number(quantidade) < 0 ||
-            !Array.isArray(ids) ||
-            !ids.every(id => Number.isSafeInteger(Number(id)) && Number(id) > 0) ||
-            (imagem != null &&
-                (typeof imagem !== 'string' || imagem.length > 255)) ||
-            (disponivel !== undefined && typeof disponivel !== 'boolean')
-        ) {
-            return res.status(400).json({
-                erro: 'Dados do produto inválidos.'
-            });
-        }
-
-        const conexao = await pool.getConnection();
-
-        try {
-            await conexao.beginTransaction();
-
-            for (const categoriaId of new Set(ids.map(Number))) {
-                const [cat] = await conexao.execute(
-                    'SELECT id FROM categorias WHERE id = ?',
-                    [categoriaId]
-                );
-
-                if (!cat.length) {
-                    await conexao.rollback();
-                    return res.status(400).json({
-                        erro: 'Uma categoria informada não existe.'
-                    });
-                }
-            }
-
-            const [resultado] = await conexao.execute(
-                `INSERT INTO produtos
-                    (nome, descricao, preco, quantidade, imagem, disponivel)
-                 VALUES (?, ?, ?, ?, ?, ?)`,
-                [
-                    nome.trim(),
-                    descricao || null,
-                    Number(preco),
-                    Number(quantidade),
-                    imagem || null,
-                    disponivel ?? true
-                ]
-            );
-
-            for (const categoriaId of new Set(ids.map(Number))) {
-                await conexao.execute(
-                    `INSERT INTO produto_categorias
-                        (produto_id, categoria_id)
-                     VALUES (?, ?)`,
-                    [resultado.insertId, categoriaId]
-                );
-            }
-
-            // Registra o saldo inicial no histórico de estoque.
-            const saldoInicial = Number(quantidade);
-            if (saldoInicial > 0) {
-                await conexao.execute(
-                    `INSERT INTO movimentacoes_estoque
-                        (usuario_id, produto_id, tipo, quantidade)
-                     VALUES (?, ?, 'entrada', ?)`,
-                    [req.session.usuario.id, resultado.insertId, saldoInicial]
-                );
-            }
-
-            await conexao.commit();
-
-            res.status(201).json({
-                id: resultado.insertId,
-                mensagem: 'Produto cadastrado.'
-            });
-        } catch (erro) {
-            await conexao.rollback().catch(() => {});
-            next(erro);
-        } finally {
-            conexao.release();
-        }
-    }
-);
-
-// --------------------------------------------------
-// ATUALIZAR PRODUTO: SOMENTE ADMIN
-// --------------------------------------------------
-
-app.put(
-    '/api/produtos/:id',
-    exigirPerfil('admin'),
-    exigirCsrf,
-    async (req, res, next) => {
-        const id = Number(req.params.id);
-        const {
-            nome, descricao, preco, quantidade,
-            categoriaId, categorias, imagem, disponivel
-        } = req.body || {};
-
-        const ids = categorias ?? (
-            categoriaId === undefined ? [] : [categoriaId]
-        );
-
-        if (
-            !Number.isSafeInteger(id) || id <= 0 ||
-            typeof nome !== 'string' || !nome.trim() ||
-            nome.trim().length > 100 ||
-            (descricao != null &&
-                (typeof descricao !== 'string' || descricao.length > 255)) ||
-            preco === null || preco === undefined ||
-            !Number.isFinite(Number(preco)) || Number(preco) < 0 ||
-            !Array.isArray(ids) ||
-            !ids.every(c => Number.isSafeInteger(Number(c)) && Number(c) > 0) ||
-            (imagem != null &&
-                (typeof imagem !== 'string' || imagem.length > 255)) ||
-            typeof disponivel !== 'boolean' ||
-            (quantidade !== undefined &&
-                (!Number.isSafeInteger(Number(quantidade)) || Number(quantidade) < 0))
-        ) {
-            return res.status(400).json({
-                erro: 'Dados do produto inválidos.'
-            });
-        }
-
-        const conexao = await pool.getConnection();
-
-        try {
-            await conexao.beginTransaction();
-
-            const [existente] = await conexao.execute(
-                'SELECT id, quantidade FROM produtos WHERE id = ? FOR UPDATE',
-                [id]
-            );
-
-            if (!existente.length) {
-                await conexao.rollback();
-                return res.status(404).json({
-                    erro: 'Produto não encontrado.'
-                });
-            }
-
-            // O saldo só pode ser alterado pela rota de movimentações.
-            // Quantidade igual ao saldo atual é aceita para compatibilidade.
-            if (
-                quantidade !== undefined &&
-                Number(quantidade) !== Number(existente[0].quantidade)
-            ) {
-                await conexao.rollback();
-                return res.status(400).json({
-                    erro: 'Não altere o estoque nesta rota. Use a rota de movimentações.'
-                });
-            }
-
-            for (const categoriaId of new Set(ids.map(Number))) {
-                const [cat] = await conexao.execute(
-                    'SELECT id FROM categorias WHERE id = ?',
-                    [categoriaId]
-                );
-
-                if (!cat.length) {
-                    await conexao.rollback();
-                    return res.status(400).json({
-                        erro: 'Uma categoria informada não existe.'
-                    });
-                }
-            }
-
-            await conexao.execute(
-                `UPDATE produtos
-                 SET nome = ?, descricao = ?, preco = ?,
-                     imagem = ?, disponivel = ?
-                 WHERE id = ?`,
-                [
-                    nome.trim(),
-                    descricao || null,
-                    Number(preco),
-                    imagem || null,
-                    disponivel,
-                    id
-                ]
-            );
-
-            await conexao.execute(
-                'DELETE FROM produto_categorias WHERE produto_id = ?',
-                [id]
-            );
-
-            for (const categoriaId of new Set(ids.map(Number))) {
-                await conexao.execute(
-                    `INSERT INTO produto_categorias
-                        (produto_id, categoria_id)
-                     VALUES (?, ?)`,
-                    [id, categoriaId]
-                );
-            }
-
-            await conexao.commit();
-
-            res.json({
-                id,
-                mensagem: 'Produto atualizado.'
-            });
-        } catch (erro) {
-            await conexao.rollback().catch(() => {});
-            next(erro);
-        } finally {
-            conexao.release();
-        }
-    }
-);
-
-// --------------------------------------------------
-// EXCLUIR PRODUTO: SOMENTE ADMIN
-// --------------------------------------------------
-
-app.delete(
-    '/api/produtos/:id',
-    exigirPerfil('admin'),
-    exigirCsrf,
-    async (req, res, next) => {
-        const id = Number(req.params.id);
-
-        if (!Number.isSafeInteger(id) || id <= 0) {
-            return res.status(400).json({
-                erro: 'ID inválido.'
-            });
-        }
-
-        try {
-            const [resultado] = await pool.execute(
-                'DELETE FROM produtos WHERE id = ?',
-                [id]
-            );
-
-            if (!resultado.affectedRows) {
-                return res.status(404).json({
-                    erro: 'Produto não encontrado.'
-                });
-            }
-
-            res.sendStatus(204);
-        } catch (erro) {
-            // Produtos com itens em pedidos ou movimentações
-            // não devem ser apagados se houver FK RESTRICT.
-            next(erro);
-        }
-    }
-);
-
-// --------------------------------------------------
-// CATEGORIAS: CONSULTA PUBLICA
-// --------------------------------------------------
-
-app.get('/api/tipos', async (req, res, next) => {
-    try {
-        const [categorias] = await pool.query(
-            'SELECT id, nome FROM categorias ORDER BY id'
-        );
-
-        res.json(categorias);
-    } catch (erro) {
-        next(erro);
-    }
-});
+// Usuários: criação de funcionários e administradores (somente admin).
+app.use('/api', rotasUsuarios);
 
 // --------------------------------------------------
 // PEDIDOS: CONSULTA PRIVADA
