@@ -1,8 +1,50 @@
 /* ==========================================================================
-   ÁREA ADMINISTRATIVA (login, estoque, cadastro) - VERSÃO DE TESTE
-   Mantém a aparência original (fundo escuro, vermelho, fonte padrão) e
-   troca larguras e alturas fixas por tamanhos que se adaptam à tela.
+   ÁREA ADMINISTRATIVA (login, estoque, cadastro)
+
+   Índice
+   1. Variáveis e base
+   2. Cabeçalho (mesma identidade das páginas do totem)
+   3. Componentes: botões, campos, selos, mensagens, diálogos
+   4. Login
+   5. Estoque
+   6. Cadastro de produto (página antiga, mantida como estava)
+   7. Ajustes por tamanho de tela
+
+   Identidade: Montserrat, vermelho nos destaques e nas ações, fundo claro
+   e tons neutros, o mesmo triângulo vermelho do cabeçalho do totem.
    ========================================================================== */
+
+
+/* ==========================================================================
+   1. VARIÁVEIS E BASE
+   ========================================================================== */
+
+:root {
+    /* cores do projeto (as mesmas de style.css) */
+    --vermelho: #ff0000;
+    --vermelho-botao: #ff0d0d;
+    --vermelho-botao-hover: #d41414;
+    --vermelho-botao-ativo: #bd1212;
+    --vermelho-escuro: #a50000;
+    --vinho: #7c0000;
+    --cinza-borda: #c8c8c8;
+
+    /* neutros da área administrativa */
+    --fundo-pagina: #f6f4f4;
+    --fundo-card: #ffffff;
+    --linha-suave: #ece7e7;
+    --texto: #2a2323;
+    --texto-suave: #6b6161;
+
+    --sucesso-texto: #1d5c35;
+    --sucesso-fundo: #e8f5ec;
+    --erro-texto: #7c0000;
+    --erro-fundo: #fdeaea;
+
+    --sombra-card: 0 8px 28px rgba(60, 20, 20, 0.08);
+    --raio-card: 16px;
+    --raio-campo: 10px;
+}
 
 *,
 *::before,
@@ -11,16 +53,598 @@
     font-family: "Montserrat", system-ui, sans-serif;
 }
 
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
 .pagina-admin {
     margin: 0;
     min-height: 100vh;
     min-height: 100dvh;
-    padding: clamp(0.5rem, 2vw, 1.5rem);
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: url("../img/imgAdmin/FundoAdmin.png") center / cover fixed;
+    color: var(--texto);
+    background: var(--fundo-pagina);
 }
+
+/* Link para pular direto ao conteúdo (teclado e leitores de tela) */
+.link-pular {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 20;
+    padding: 0.6rem 1rem;
+    color: white;
+    font-weight: 700;
+    background: var(--vinho);
+    border-radius: 8px;
+}
+
+.link-pular:focus {
+    top: 1rem;
+}
+
+:focus-visible {
+    outline: 3px solid var(--vinho);
+    outline-offset: 2px;
+}
+
+
+/* ==========================================================================
+   2. CABEÇALHO
+   ========================================================================== */
+
+.cabecalho-admin {
+    position: relative;
+    width: 100%;
+    flex: none;
+    overflow: hidden;
+}
+
+.cabecalho-admin .retangulo-vermelho {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: var(--vermelho);
+    pointer-events: none;
+}
+
+.conteudo-cabecalho-admin {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: clamp(0.9rem, 2.5vw, 1.5rem) clamp(1rem, 4vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.marca-admin {
+    margin: 0;
+    color: white;
+    font-weight: 700;
+    font-style: italic;
+    font-size: clamp(1.75rem, 3vmin + 0.75rem, 2.75rem);
+    line-height: 1.1;
+    text-shadow: 0.12em 0.08em 2px var(--vermelho-escuro);
+}
+
+.conteudo-cabecalho-admin h1 {
+    margin: 0;
+    color: white;
+    font-weight: 600;
+    font-size: clamp(1rem, 1.2vw + 0.7rem, 1.5rem);
+    letter-spacing: 0.02em;
+}
+
+
+/* ==========================================================================
+   3. COMPONENTES
+   ========================================================================== */
+
+.card {
+    background: var(--fundo-card);
+    border: 1px solid var(--linha-suave);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombra-card);
+}
+
+/* ---------- Botões ---------- */
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--texto);
+    background: white;
+    border: 2px solid transparent;
+    border-radius: var(--raio-campo);
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.botao:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.botao:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.botao-primario {
+    color: white;
+    background: var(--vermelho-botao);
+}
+
+.botao-primario:hover:not(:disabled) {
+    background: var(--vermelho-botao-hover);
+}
+
+.botao-primario:active:not(:disabled) {
+    background: var(--vermelho-botao-ativo);
+}
+
+.botao-contorno {
+    color: var(--vermelho-escuro);
+    border-color: var(--vermelho-escuro);
+}
+
+.botao-contorno:hover:not(:disabled) {
+    background: #fff0f0;
+}
+
+.botao-perigo {
+    color: white;
+    background: var(--vinho);
+}
+
+.botao-perigo:hover:not(:disabled) {
+    background: #5e0000;
+}
+
+.botao-perigo-contorno {
+    color: var(--vinho);
+    border-color: #d9b5b5;
+}
+
+.botao-perigo-contorno:hover:not(:disabled) {
+    color: white;
+    background: var(--vinho);
+    border-color: var(--vinho);
+}
+
+.botao-pequeno {
+    min-height: 2.25rem;
+    padding: 0.25rem 0.85rem;
+    font-size: 0.85rem;
+}
+
+.botao-bloco {
+    width: 100%;
+}
+
+/* ---------- Campos de formulário ---------- */
+.campo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.campo-form label,
+.campo-form legend {
+    padding: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--vinho);
+}
+
+.campo-form input,
+.campo-form select,
+.campo-form textarea {
+    width: 100%;
+    min-height: 2.9rem;
+    padding: 0.6rem 0.8rem;
+    font-size: 1rem;
+    color: var(--texto);
+    background: white;
+    border: 2px solid #d9d2d2;
+    border-radius: var(--raio-campo);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.campo-form textarea {
+    resize: vertical;
+}
+
+.campo-form input:hover,
+.campo-form select:hover,
+.campo-form textarea:hover {
+    border-color: #b9aeae;
+}
+
+.campo-form input:focus,
+.campo-form select:focus,
+.campo-form textarea:focus {
+    outline: none;
+    border-color: var(--vermelho-escuro);
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.15);
+}
+
+.dica-form {
+    margin: -0.4rem 0 1rem;
+    font-size: 0.82rem;
+    color: var(--texto-suave);
+}
+
+.campo-form .dica-form {
+    margin: 0;
+}
+
+.grade-campos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0 1rem;
+}
+
+/* Caixas de seleção (categorias, disponibilidade) */
+.opcao-marcavel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.5rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.95rem;
+    color: var(--texto);
+    border: 2px solid #d9d2d2;
+    border-radius: var(--raio-campo);
+    cursor: pointer;
+}
+
+.opcao-marcavel input {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: 0;
+    accent-color: var(--vermelho-escuro);
+}
+
+.opcao-marcavel:has(input:checked) {
+    background: #fff0f0;
+    border-color: var(--vermelho-escuro);
+}
+
+.lista-categorias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* ---------- Selos ---------- */
+.selo {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.selo-ativo {
+    color: var(--sucesso-texto);
+    background: var(--sucesso-fundo);
+}
+
+.selo-desativado {
+    color: var(--texto-suave);
+    background: #ece7e7;
+}
+
+.selo-perfil {
+    color: var(--vinho);
+    background: #fff0f0;
+    border: 1px solid #f0c8c8;
+}
+
+/* ---------- Mensagens de retorno ---------- */
+#mensagem {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+#mensagem:empty {
+    display: none;
+}
+
+#mensagem[data-tipo="sucesso"],
+#mensagem[data-tipo="erro"] {
+    padding: 0.75rem 1rem;
+    border-radius: var(--raio-campo);
+}
+
+#mensagem[data-tipo="sucesso"] {
+    color: var(--sucesso-texto);
+    background: var(--sucesso-fundo);
+}
+
+#mensagem[data-tipo="erro"] {
+    color: var(--erro-texto);
+    background: var(--erro-fundo);
+}
+
+/* Erros mostrados dentro de um diálogo */
+.erro-dialogo {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--erro-texto);
+}
+
+.erro-dialogo:empty {
+    display: none;
+}
+
+.erro-dialogo:not(:empty) {
+    padding: 0.65rem 0.85rem;
+    background: var(--erro-fundo);
+    border-radius: var(--raio-campo);
+}
+
+/* ---------- Diálogos ---------- */
+.dialogo {
+    width: min(36rem, 100% - 2rem);
+    max-height: calc(100dvh - 2rem);
+    padding: clamp(1.25rem, 4vw, 2rem);
+    color: var(--texto);
+    background: white;
+    border: 0;
+    border-radius: var(--raio-card);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+}
+
+.dialogo-estreito {
+    width: min(28rem, 100% - 2rem);
+}
+
+.dialogo::backdrop {
+    background: rgba(30, 10, 10, 0.55);
+}
+
+.dialogo h2 {
+    margin: 0 0 1.25rem;
+    color: var(--vinho);
+    font-size: 1.3rem;
+}
+
+.dialogo p {
+    margin-top: 0;
+    line-height: 1.5;
+}
+
+.acoes-dialogo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+
+/* ==========================================================================
+   4. LOGIN
+   ========================================================================== */
+
+.painel-login {
+    width: min(26rem, 100% - 2rem);
+    margin: auto;          /* centraliza no espaço que sobra abaixo do cabeçalho */
+    padding: 1.5rem 0;
+}
+
+.painel-login h2 {
+    margin: 0 0 0.35rem;
+    color: var(--vinho);
+    font-size: 1.5rem;
+}
+
+.painel-login .card {
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+.painel-login h1 {
+    margin: 0 0 0.35rem;
+    color: var(--vinho);
+    font-size: 1.5rem;
+}
+
+.texto-apoio {
+    margin: 0 0 1.5rem;
+    font-size: 0.95rem;
+    color: var(--texto-suave);
+}
+
+#pg-login #btn-login {
+    margin-top: 0.5rem;
+}
+
+#pg-login #mensagem {
+    margin-top: 1rem;
+}
+
+.rodape-login {
+    margin: 1.25rem 0 0;
+    font-size: 0.8rem;
+    text-align: center;
+    color: var(--texto-suave);
+}
+
+
+/* ==========================================================================
+   5. ESTOQUE
+   ========================================================================== */
+
+.area-estoque {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: min(100% - 2rem, 76rem);
+    margin: 0 auto;
+    padding: 1.25rem 0 2.5rem;
+}
+
+.faixa-sessao {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.usuario-sessao {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.6rem;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.rotulo-sessao {
+    color: var(--texto-suave);
+}
+
+.painel-estoque {
+    padding: clamp(1rem, 3vw, 1.75rem);
+}
+
+.cabecalho-painel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.cabecalho-painel h2 {
+    margin: 0;
+    color: var(--vinho);
+    font-size: 1.35rem;
+}
+
+.acoes-estoque {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.tabela-rolavel {
+    overflow-x: auto;
+}
+
+.tabela-estoque {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela-estoque th {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--vinho);
+    border-bottom: 2px solid var(--vermelho-escuro);
+    white-space: nowrap;
+}
+
+.tabela-estoque td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--linha-suave);
+}
+
+.tabela-estoque tbody tr:hover {
+    background: #fffafa;
+}
+
+.celula-produto {
+    font-weight: 600;
+}
+
+.celula-numero {
+    font-variant-numeric: tabular-nums;
+}
+
+.linha-desativada .celula-produto,
+.linha-desativada .celula-numero {
+    color: var(--texto-suave);
+}
+
+.linha-informativa {
+    padding: 2rem 0.75rem;
+    text-align: center;
+    color: var(--texto-suave);
+}
+
+.celula-acoes {
+    white-space: nowrap;
+}
+
+.celula-acoes .botao + .botao {
+    margin-left: 0.4rem;
+}
+
+.form-movimentacao {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-movimentacao select,
+.form-movimentacao input {
+    height: 2.25rem;
+    padding: 0 0.5rem;
+    font-size: 0.9rem;
+    color: var(--texto);
+    background: white;
+    border: 2px solid #d9d2d2;
+    border-radius: 8px;
+}
+
+.form-movimentacao input {
+    width: 4.5rem;
+}
+
+.form-movimentacao select:focus,
+.form-movimentacao input:focus {
+    outline: none;
+    border-color: var(--vermelho-escuro);
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.15);
+}
+
+/* O atributo hidden precisa vencer as regras de display acima */
+[hidden] {
+    display: none !important;
+}
+
+
+/* ==========================================================================
+   6. CADASTRO DE PRODUTO (página antiga cadastro.html, mantida como estava)
+   ========================================================================== */
 
 .titulo-painel {
     text-align: center;
@@ -47,132 +671,6 @@
     background-color: rgba(165, 42, 42, 0.942);
 }
 
-
-/* ---------- Login ---------- */
-#pagina-login {
-    justify-content: center;
-}
-
-.painel-login {
-    width: min(20rem, 100%);
-    padding: 0 1.25rem 1.5rem;
-    color: white;
-    text-align: center;
-    background-color: rgb(37, 35, 35);
-    border-radius: 12px;
-}
-
-#titulo-login {
-    padding: 2.5rem 0;
-    font-size: 2.5rem;
-    text-align: center;
-}
-
-#usuario,
-#senha {
-    display: block;
-    width: min(16.25rem, 100%);
-    margin: 0 auto 1.5rem;
-    color: aliceblue;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 1rem;
-    background-color: rgb(37, 35, 35);
-    border: 1px solid rgb(37, 35, 35);
-    border-bottom: 1px solid white;
-}
-
-#senha {
-    margin-bottom: 3.5rem;
-}
-
-#usuario::placeholder,
-#senha::placeholder {
-    color: rgba(255, 255, 255, 0.81);
-}
-
-#usuario:focus,
-#senha:focus {
-    outline: none;
-}
-
-#usuario:focus::placeholder,
-#senha:focus::placeholder {
-    color: rgba(160, 159, 159, 0.349);
-}
-
-#btn-login {
-    width: min(11.25rem, 100%);
-    min-height: 2.75rem;
-    margin-bottom: 1.5rem;
-    color: white;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 1.125rem;
-    background-color: rgb(170, 36, 36);
-    border: none;
-    border-radius: 7px;
-    cursor: pointer;
-}
-
-#btn-login:hover {
-    background-color: rgba(118, 10, 10, 0.727);
-}
-
-
-/* ---------- Estoque ---------- */
-.area-estoque {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
-    gap: clamp(1rem, 3vw, 3rem);
-    width: 100%;
-}
-
-.painel-estoque {
-    width: min(31.25rem, 100%);
-    padding: 0.625rem;
-    color: white;
-    text-align: center;
-    background-color: rgb(37, 35, 35);
-    border-radius: 12px;
-}
-
-.tabela-estoque {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0.5rem 0.4rem;
-}
-
-.tabela-estoque th {
-    font-size: 1.25rem;
-    font-weight: normal;
-}
-
-.celula-nome,
-.celula-estoque,
-.celula-preco {
-    padding: 0.4rem 0.625rem;
-    background-color: rgb(70, 68, 68);
-    border-radius: 7px;
-    cursor: pointer;
-}
-
-.celula-nome:hover,
-.celula-estoque:hover,
-.celula-preco:hover {
-    background-color: rgba(165, 42, 42, 0.73);
-}
-
-.acoes-estoque {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.625rem;
-    width: min(22.5rem, 100%);
-}
-
-
-/* ---------- Cadastro de produto ---------- */
 .area-cadastro {
     display: flex;
     justify-content: center;
@@ -218,4 +716,108 @@
 .acoes-cadastro .botao-admin {
     flex: 1 1 12rem;
     width: auto;
+}
+
+
+/* ==========================================================================
+   7. AJUSTES POR TAMANHO DE TELA
+   ========================================================================== */
+
+/* Tablet e celular: a tabela vira uma lista de cartões, sem rolagem lateral */
+@media (max-width: 56rem) {
+    .tabela-rolavel {
+        overflow-x: visible;
+    }
+
+    .tabela-estoque,
+    .tabela-estoque tbody {
+        display: block;
+    }
+
+    .tabela-estoque thead {
+        /* Os rótulos passam a vir de data-rotulo em cada célula */
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+    }
+
+    .tabela-estoque tr {
+        display: block;
+        margin-bottom: 0.85rem;
+        padding: 0.35rem 0.9rem;
+        border: 1px solid var(--linha-suave);
+        border-radius: 12px;
+    }
+
+    .tabela-estoque tr.linha-desativada {
+        background: #faf8f8;
+    }
+
+    .tabela-estoque td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.55rem 0;
+        text-align: right;
+        border-bottom: 1px solid var(--linha-suave);
+    }
+
+    .tabela-estoque td:last-child {
+        border-bottom: 0;
+    }
+
+    .tabela-estoque td::before {
+        content: attr(data-rotulo);
+        flex: none;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-align: left;
+        text-transform: uppercase;
+        color: var(--vinho);
+    }
+
+    .tabela-estoque td.linha-informativa {
+        display: block;
+        text-align: center;
+    }
+
+    .tabela-estoque td.linha-informativa::before {
+        content: none;
+    }
+
+    .celula-acoes {
+        white-space: normal;
+    }
+
+    .form-movimentacao {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 30rem) {
+    .acoes-estoque,
+    .acoes-estoque .botao {
+        width: 100%;
+    }
+
+    .faixa-sessao .botao {
+        width: 100%;
+    }
+
+    .acoes-dialogo .botao {
+        flex: 1 1 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .botao,
+    .campo-form input,
+    .campo-form select,
+    .campo-form textarea {
+        transition: none;
+    }
 }

@@ -4,8 +4,8 @@ Conteúdo do pacote:
 - server-mysql/server.js: servidor principal; mantém as rotas de pedidos e movimentações, e monta os módulos de autenticação e produtos.
 - server-mysql/routes/autenticacao.js: token CSRF, login, consulta da sessão (/api/me) e logout (/api/logout).
 - server-mysql/routes/produtos.js: consulta pública, listagem administrativa, cadastro, edição, categorias e desativação de produtos.
-- server-mysql/middleware/verificar-autenticação.js: valida se a sessão corresponde a uma conta ativa.
-- server-mysql/middleware/permissão-admin.js: verifica se o perfil pode executar a operação.
+- server-mysql/middleware/verificar-autenticacao.js: valida se a sessão corresponde a uma conta ativa.
+- server-mysql/middleware/permissao-admin.js: verifica se o perfil pode executar a operação.
 - server-mysql/middleware/verificar-csrf.js: valida tokens CSRF.
 - public/_js/estoque.js: valida a sessão, carrega os produtos, registra entradas/saídas e encerra a sessão.
 - server-mysql/db.js: versão com carregamento explícito do .env e validação das variáveis essenciais.
@@ -15,7 +15,7 @@ node --check server-mysql/server.js
 node --check server-mysql/routes/autenticacao.js
 node --check server-mysql/routes/produtos.js
 node --check server-mysql/middleware/verificar-autenticação.js
-node --check server-mysql/middleware/permissão-admin.js
+node --check server-mysql/middleware/permissao-admin.js
 node --check server-mysql/middleware/verificar-csrf.js
 node --check public/_js/estoque.js
 
