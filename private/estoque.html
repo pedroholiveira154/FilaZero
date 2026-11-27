@@ -100,8 +100,16 @@
             <p class="dica-form" id="dica-quantidade" hidden></p>
 
             <div class="campo-form">
-                <label for="produto-imagem">Imagem (caminho)</label>
-                <input type="text" id="produto-imagem" name="imagem" maxlength="255" placeholder="img/imgCardapio/produto.png">
+                <label for="produto-arquivo">Imagem do produto</label>
+                <div class="area-imagem">
+                    <img id="previa-imagem" class="previa-imagem" alt="Pré-visualização da imagem do produto" hidden>
+                    <div class="controles-imagem">
+                        <input type="file" id="produto-arquivo" accept="image/png,image/jpeg,image/webp" aria-describedby="estado-imagem">
+                        <p class="dica-form" id="estado-imagem" aria-live="polite">PNG, JPEG ou WebP, até 2 MB.</p>
+                    </div>
+                </div>
+                <!-- Guarda o caminho devolvido pelo servidor depois do envio. -->
+                <input type="hidden" id="produto-imagem" name="imagem">
             </div>
 
             <fieldset class="campo-form conjunto-categorias">

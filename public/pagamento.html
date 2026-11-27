@@ -36,18 +36,17 @@
                 <p>Insira a forma de pagamento:</p>
             </div>
 
-            <div id="opcoes-pagamento">
-                <button type="button" class="botao-forma-pagamento" id="pagamento-debito">Débito</button>
-                <button type="button" class="botao-forma-pagamento" id="pagamento-credito">Crédito</button>
-                <button type="button" class="botao-forma-pagamento" id="pagamento-dinheiro">Dinheiro</button>
-                <button type="button" class="botao-forma-pagamento" id="pagamento-pix">Pix</button>
-                <button type="button" class="botao-forma-pagamento" id="pagamento-vale-refeicao">Vale Refeição</button>
+            <div id="opcoes-pagamento" role="group" aria-label="Forma de pagamento">
+                <button type="button" class="botao-forma-pagamento" id="pagamento-debito" data-forma="debito" aria-pressed="false">Débito</button>
+                <button type="button" class="botao-forma-pagamento" id="pagamento-credito" data-forma="credito" aria-pressed="false">Crédito</button>
+                <button type="button" class="botao-forma-pagamento" id="pagamento-dinheiro" data-forma="dinheiro" aria-pressed="false">Dinheiro</button>
+                <button type="button" class="botao-forma-pagamento" id="pagamento-pix" data-forma="pix" aria-pressed="false">Pix</button>
             </div>
         </section>
     </main>
 
     <div class="barra-acao">
-        <button type="button" onclick="pagar()" class="botao-acao">PAGAR</button>
+        <button type="button" onclick="pagar()" class="botao-acao" id="botao-pagar" disabled>PAGAR</button>
     </div>
 
     <script src="_js/script.js"></script>

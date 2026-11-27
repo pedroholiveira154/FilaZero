@@ -643,6 +643,48 @@ html {
 
 
 /* ==========================================================================
+   Envio de imagem do produto (diálogo de cadastro e alteração)
+   ========================================================================== */
+
+.area-imagem {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+.previa-imagem {
+    width: 5.5rem;
+    height: 5.5rem;
+    object-fit: cover;
+    background: white;
+    border: 2px solid #d9d2d2;
+    border-radius: var(--raio-campo);
+}
+
+.controles-imagem {
+    display: flex;
+    flex: 1 1 12rem;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+/* O estilo geral de campos tem altura fixa; o seletor de arquivo precisa se ajustar ao conteúdo */
+.campo-form input[type="file"] {
+    min-height: auto;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.dica-form--erro {
+    color: var(--erro-texto);
+    font-weight: 600;
+}
+
+
+
+/* ==========================================================================
    6. CADASTRO DE PRODUTO (página antiga cadastro.html, mantida como estava)
    ========================================================================== */
 

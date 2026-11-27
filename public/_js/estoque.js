@@ -345,6 +345,8 @@ function abrirDialogoProduto(produto = null) {
     formProduto.reset();
     mostrarErroDialogo(document.getElementById('erro-produto'), '');
 
+    redefinirCampoImagem(produto ? produto.imagem : '');
+
     const titulo = document.getElementById('titulo-dialogo-produto');
     const campoQuantidade = document.getElementById('campo-quantidade');
     const dicaQuantidade = document.getElementById('dica-quantidade');
@@ -374,8 +376,97 @@ function abrirDialogoProduto(produto = null) {
     document.getElementById('produto-nome').focus();
 }
 
+// --------------------------------------------------
+// PRODUTO: imagem (envio de arquivo)
+// --------------------------------------------------
+
+const arquivoImagem = document.getElementById('produto-arquivo');
+const campoImagem = document.getElementById('produto-imagem');
+const previaImagem = document.getElementById('previa-imagem');
+const estadoImagem = document.getElementById('estado-imagem');
+const botaoSalvarProduto = document.getElementById('btn-salvar-produto');
+
+const TEXTO_PADRAO_IMAGEM = 'PNG, JPEG ou WebP, até 2 MB.';
+const TIPOS_IMAGEM = ['image/png', 'image/jpeg', 'image/webp'];
+const LIMITE_IMAGEM = 2 * 1024 * 1024;
+let enviandoImagem = false;
+
+function mostrarPreviaImagem(endereco) {
+    if (endereco) {
+        previaImagem.src = endereco;
+        previaImagem.hidden = false;
+    } else {
+        previaImagem.removeAttribute('src');
+        previaImagem.hidden = true;
+    }
+}
+
+// Se a imagem atual não puder ser carregada (arquivo ausente), esconde a pré-visualização.
+previaImagem.addEventListener('error', () => {
+    previaImagem.hidden = true;
+});
+
+function mostrarEstadoImagem(texto, erro = false) {
+    estadoImagem.textContent = texto;
+    estadoImagem.classList.toggle('dica-form--erro', erro);
+}
+
+// Deixa o campo de imagem no estado inicial, mostrando a imagem atual quando houver.
+function redefinirCampoImagem(caminhoAtual) {
+    arquivoImagem.value = '';
+    campoImagem.value = caminhoAtual || '';
+    mostrarPreviaImagem(caminhoAtual || '');
+    mostrarEstadoImagem(TEXTO_PADRAO_IMAGEM);
+    enviandoImagem = false;
+    botaoSalvarProduto.disabled = false;
+}
+
+// Ao escolher um arquivo, ele é enviado ao servidor, que confere o formato e devolve o caminho.
+arquivoImagem.addEventListener('change', async () => {
+    const arquivo = arquivoImagem.files[0];
+    if (!arquivo) return;
+
+    // Verificações apenas para dar retorno rápido; o servidor repete todas elas.
+    if (!TIPOS_IMAGEM.includes(arquivo.type)) {
+        mostrarEstadoImagem('Escolha uma imagem PNG, JPEG ou WebP.', true);
+        arquivoImagem.value = '';
+        return;
+    }
+    if (arquivo.size > LIMITE_IMAGEM) {
+        mostrarEstadoImagem('A imagem excede o limite de 2 MB.', true);
+        arquivoImagem.value = '';
+        return;
+    }
+
+    const caminhoAnterior = campoImagem.value;
+    const enderecoLocal = URL.createObjectURL(arquivo);
+    mostrarPreviaImagem(enderecoLocal);
+    mostrarEstadoImagem('Enviando imagem...');
+    enviandoImagem = true;
+    botaoSalvarProduto.disabled = true;
+
+    try {
+        const resposta = await requisicaoApi('/api/produtos/imagem', {
+            method: 'POST',
+            headers: { 'X-CSRF-Token': tokenCsrf, 'Content-Type': arquivo.type },
+            body: arquivo
+        });
+        campoImagem.value = resposta.imagem;
+        mostrarEstadoImagem('Imagem enviada.');
+    } catch (erro) {
+        // Em caso de falha, volta para a imagem que o produto já tinha.
+        mostrarPreviaImagem(caminhoAnterior);
+        arquivoImagem.value = '';
+        mostrarEstadoImagem(erro.message || 'Não foi possível enviar a imagem.', true);
+    } finally {
+        enviandoImagem = false;
+        botaoSalvarProduto.disabled = false;
+    }
+});
+
 formProduto.addEventListener('submit', async (evento) => {
     evento.preventDefault();
+    if (enviandoImagem) return;
 
     const erroProduto = document.getElementById('erro-produto');
     mostrarErroDialogo(erroProduto, '');

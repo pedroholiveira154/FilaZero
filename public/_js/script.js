@@ -71,7 +71,7 @@ function retornar() {
     if (pg_pagamento) {
         window.location.href = 'pedido.html'
     }
-    if(pg_finalizar){
+    if (pg_finalizar) {
         window.location.href = 'pagamento.html'
     }
 }
@@ -110,14 +110,14 @@ function mostrarTotal(total) {
 // FUNCOES - CARDAPIO
 // =============================================
 
-async function categoria(){
+async function categoria() {
     const li = document.querySelector('li.ativo');
     const categoria = li.dataset.categoria;
 
-    try{
+    try {
         console.log(categoria)
     }
-    catch(error){
+    catch (error) {
         console.log(error)
         alert("Não foi possível alternar a categoria")
     }
@@ -326,6 +326,9 @@ if (pg_pedido) {
 // FUNCOES - PAGAMENTO
 // =============================================
 
+// Forma de pagamento escolhida pelo cliente (valores: debito, credito, dinheiro, pix).
+let formaPagamentoEscolhida = null;
+
 if (pg_pagamento) {
 
     // pega carrinho
@@ -336,12 +339,36 @@ if (pg_pagamento) {
 
     // MOSTRAR TOTAL
     mostrarTotal(total);
-    
+
+    // ESCOLHA DA FORMA DE PAGAMENTO
+    // O botão PAGAR só é liberado depois que o cliente escolhe uma forma.
+    const botoesPagamento = document.querySelectorAll('.botao-forma-pagamento');
+    const botaoPagar = document.getElementById('botao-pagar');
+
+    for (const botao of botoesPagamento) {
+        botao.addEventListener('click', () => {
+            formaPagamentoEscolhida = botao.dataset.forma;
+
+            for (const outro of botoesPagamento) {
+                const escolhido = outro === botao;
+                outro.classList.toggle('selecionado', escolhido);
+                outro.setAttribute('aria-pressed', String(escolhido));
+            }
+
+            botaoPagar.disabled = false;
+        });
+    }
+
 }
 
 // ADAPTADO: antes esse botão só limpava o carrinho e redirecionava,
-    // sem gravar nada. Agora ele registra o pedido de verdade via API.
+// sem gravar nada. Agora ele registra o pedido de verdade via API.
 async function pagar() {
+
+    if (!formaPagamentoEscolhida) {
+        alert("Escolha uma forma de pagamento.");
+        return;
+    }
 
     const carrinho = obterCarrinho();
 
@@ -351,7 +378,7 @@ async function pagar() {
 
     const pedido = {
         numeroPedido: numeroPedido,
-        formaPagamento: "PIX",
+        formaPagamento: formaPagamentoEscolhida,
         status: "Pago",
         total: total,
         itens: carrinho.map(produto => ({
@@ -371,19 +398,23 @@ async function pagar() {
     const { csrfToken } = await respostaToken.json();
 
     try {
-    // Envia o pedido incluindo o token CSRF.
-    const resposta = await fetch('/api/pedidos', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-        },
-        body: JSON.stringify(pedido)
-    });
+        // Envia o pedido incluindo o token CSRF.
+        const resposta = await fetch('/api/pedidos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(pedido)
+        });
 
         if (!resposta.ok) throw new Error("Falha ao registrar pedido");
 
-        alert("Compra realizada!");
+        await Swal.fire({
+            title: 'Tudo certo!',
+            text: 'Sua compra foi oficialmente realizada.',
+            icon: 'sucess',
+        });
         localStorage.removeItem("carrinho");
         window.location.href = "finalizar.html";
 

@@ -237,6 +237,13 @@ select {
   background-color: var(--vermelho-botao-ativo);
 }
 
+/* Botão desabilitado (ex.: PAGAR antes de escolher a forma de pagamento) */
+.botao-acao:disabled {
+  background-color: var(--vermelho-botao);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .botao-voltar:focus-visible,
 .botao-acao:focus-visible,
 .botao-forma-pagamento:focus-visible,
@@ -725,6 +732,12 @@ select {
   background-color: #920000;
 }
 
+/* Forma de pagamento escolhida: mais escura e com anel, para não depender só da cor */
+.botao-forma-pagamento.selecionado {
+  background-color: #920000;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 7px #920000;
+}
+
 
 /* ==========================================================================
    8. FINALIZAÇÃO
@@ -749,10 +762,10 @@ select {
    9. AJUSTES POR TAMANHO DE TELA
    ========================================================================== */
 
-/* Tablet e telas maiores: pagamento no formato "W" (3 em cima, 2 embaixo) */
+/* Tablet e telas maiores: pagamento em zigue-zague (4 botões, alternando linha de cima e de baixo) */
 @media (min-width: 640px) {
   #opcoes-pagamento {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-template-rows: repeat(2, auto);
   }
 
@@ -782,11 +795,6 @@ select {
   #pagamento-pix {
     grid-column: 4;
     grid-row: 2;
-  }
-
-  #pagamento-vale-refeicao {
-    grid-column: 5;
-    grid-row: 1;
   }
 }
 

@@ -11,7 +11,9 @@ A pasta `database/` contém os códigos para criação do Banco de Dados, com to
 Acesse a pasta `database/` do totem-cantina
 
 Use o código abaixo:
-- "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p < schema.sql **OBS: O caminho do programa do MYSQL muda de PC para PC**
+- "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p < schema.sql 
+- "C:\Program Files\MySQL\MySQL Workbench 8.0 CE\mysql.exe" -u root -p < schema.sql
+**OBS: O caminho do programa do MYSQL muda de PC para PC**
 - dir /s /b C:\mysql.exe (Ele procura onde está a pasta do MYSQL)
 
 ## Passo 1: Configurar o .env
@@ -31,7 +33,8 @@ Acesse a pasta `server-mysql/` e digite *node server.js*
 # Analisando o Banco de Dados
 
 No CMD digite:
-- "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p 
+- "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" u root -p 
+- "C:\Program Files\MySQL\MySQL Workbench 8.0 CE\mysql.exe" -u root -p
 **Insira a senha do root ("admin")**
 
 Códigos:
